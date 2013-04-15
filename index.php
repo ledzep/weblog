@@ -25,7 +25,7 @@ foreach ($rows AS $key => $value) {
 		if (!preg_match('@^https?://@i', $value)) {
 			$value = 'http://' . $value;
 		}
-		$rows[$key] = '<a href="' . $value . '" target="_blank">' . $value . '</a>';
+		$rows[$key] = '<a href="' . $value . '" target="_blank">' . $rows[$key] . '</a>';
 	}
 }
 $text = implode(' ', $rows);
