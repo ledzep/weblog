@@ -1,6 +1,7 @@
 <?php
 
 require("config.php");
+require("ip2locationlite.class.php");
 
 if (isset($_GET['id']) == TRUE) {
 	if (is_numeric($_GET['id']) == FALSE) {
@@ -61,6 +62,10 @@ $commsql = "SELECT * FROM comments WHERE blog_id = " . $validentry . "
 $commresult = mysql_query($commsql);
 $numrows_comm = mysql_num_rows($commresult);
 
+$geosql = "SELECT latitude, longitude FROM visitor_map WHERE blog_id = " . $validentry;
+$georesult = mysql_query($geosql);
+$georow = mysql_fetch_assoc($georesult);
+
 if($numrows_comm == 0) {
 	echo "<p>No comments. </p>";
 }
@@ -70,6 +75,7 @@ else {
 		echo "<a name='comment" . $i . "'>";
 		//echo "<h3>Comment by " . $_SESSION['USERNAME'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . "</h3>";
 		echo "<h3>Comment by " . $commrow['name'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . "</h3>";
+		echo "<h4>GeoPlot: " . $georow['latitude'] . ";" . $georow['longitude'] . "</h4>";
 		echo nl2br($commrow['comment']);
 		$i++;
 	}
@@ -106,6 +112,24 @@ if(isset($_POST['submit'])) {
 	$db = mysql_connect($dbhost, $dbuser, $dbpassword);
 	mysql_select_db($dbdatabase, $db);
 	
+	$iplite = new ip2location_lite;
+	$iplite->setKey('8bdc8e62c7c1a13baab60b982fb9b37d9354672b7f01b5210c2bee51dc9a151c');
+	$locations = $iplite->getCity($_SERVER['REMOTE_ADDR']);
+	$error = $iplite->getError();
+	$longitude = 0.0;
+	$latitude = 0.0;
+	$cityname = "";
+	$regionname = "";
+	$countryname = "";
+	if(empty($error)) {
+		// there was no error, so get all the value
+		$longitude = $locations['longitude'];
+		$latitude = $locations['latitude'];
+		$cityname = $locations['cityName'];
+		$regionname = $locations['regionName'];
+		$countryname = $locations['countryName'];
+	}
+	
 	if($_POST['comment'] == "") {
 		echo "Please enter something!!";
 	}
@@ -117,6 +141,12 @@ if(isset($_POST['submit'])) {
                 , '" . $_POST['comment'] . "'
                 );";
 		mysql_query($sql);
+		
+		$visitorsql = "INSERT INTO visitor_map(user_id, blog_id, city, region, country, longitude, latitude) VALUES
+					(" . $_SESSION['USERID'] . ", " . $validentry . "
+					, '" . $cityname . "', '" . $regionname . "', '" . $countryname . "', '" . $longitude . "', '" . $latitude . "');";
+		mysql_query($visitorsql);
+		
 		header("Location: http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?id=" . $validentry);
 		//header("Location: http://www.google.com/"); 
 	}
