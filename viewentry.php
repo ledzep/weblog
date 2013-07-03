@@ -72,7 +72,9 @@ else {
 	$i = 1;
 	while(($commrow = mysql_fetch_assoc($commresult)) and ($georow = mysql_fetch_assoc($georesult))) {
 		echo "<a name='comment" . $i . "'>";
-		echo "<h4>Comment by " . $commrow['name'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . ", from <a href='https://maps.google.com/maps?q=" . $georow['latitude'] . "," . $georow['longitude'] . "' target='_blank'>" . ucwords(strtolower($georow['city'])) . "/" . ucwords(strtolower($georow['region'])) . "/" . ucwords(strtolower($georow['country'])) . "</a></h4>";
+		echo "<h4>Comment by " . $commrow['name'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . 
+		", from <a href='https://maps.google.com/maps?q=" . $georow['latitude'] . "," . $georow['longitude'] . "' target='_blank'>" 
+		. ucwords(strtolower($georow['city'])) . "/" . ucwords(strtolower($georow['region'])) . "/" . ucwords(strtolower($georow['country'])) . "</a></h4>";
 		echo nl2br($commrow['comment']);
 		$i++;
 	}
