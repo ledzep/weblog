@@ -64,18 +64,15 @@ $numrows_comm = mysql_num_rows($commresult);
 
 $geosql = "SELECT latitude, longitude FROM visitor_map WHERE blog_id = " . $validentry;
 $georesult = mysql_query($geosql);
-$georow = mysql_fetch_assoc($georesult);
 
 if($numrows_comm == 0) {
 	echo "<p>No comments. </p>";
 }
 else {
 	$i = 1;
-	while($commrow = mysql_fetch_assoc($commresult)) {
+	while(($commrow = mysql_fetch_assoc($commresult)) and ($georow = mysql_fetch_assoc($georesult))) {
 		echo "<a name='comment" . $i . "'>";
-		//echo "<h3>Comment by " . $_SESSION['USERNAME'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . "</h3>";
-		echo "<h3>Comment by " . $commrow['name'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . "</h3>";
-		echo "<h4>GeoPlot: " . $georow['latitude'] . ";" . $georow['longitude'] . "</h4>";
+		echo "<h4>Comment by " . $commrow['name'] . " on " . date("D jS F Y g.iA", strtotime($commrow['dateposted'])) . ", from " . ucwords(strtolower($georow['city'])) . "/" . ucwords(strtolower($georow['region'])) . "/" . ucwords(strtolower($georow['country'])) . "</h4>";
 		echo nl2br($commrow['comment']);
 		$i++;
 	}
