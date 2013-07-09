@@ -22,7 +22,36 @@ require("header.php");
 $sql = "SELECT * FROM categories";
 $result = mysql_query($sql);
 
-if(isset($_SESSION['USERNAME']) == FALSE) {
+while($row = mysql_fetch_assoc($result)) {
+	if($validcat == $row['id']) {
+		echo "<strong>" . $row['cat'] . "</strong><br />";
+		$entriessql = "SELECT * FROM entries WHERE cat_id = " . $validcat . " ORDER BY dateposted DESC;";
+		$entriesres = mysql_query($entriessql);
+		$numrows_entries = mysql_num_rows($entriesres);
+			
+		echo "<ul>";
+		if($numrows_entries == 0) {
+			echo "<li>No entries!</li>";
+		}
+		else {
+			while($entriesrow = mysql_fetch_assoc($entriesres)) {
+				echo "<li>" . date("D jS F Y g.iA", strtotime($entriesrow['dateposted'])) . " - <a href='viewentry.php?id=" . $entriesrow['id'] . "'>" . $entriesrow['subject'] . "</a></li>";
+				if(isset($_SESSION['USERNAME'])) {
+					if($_SESSION['USERID'] == $entriesrow['usr_id']) {
+						echo "[<a href='updateentry.php?id=" . $entriesrow['id'] . "'>edit</a>]";
+					}
+				}
+			}
+		}
+		echo "</ul>";
+	}
+	else {
+		echo "<a href='viewcat.php?id=" . $row['id'] . "'>" . $row['cat'] . "</a><br />";
+	}
+
+}
+
+/*if(isset($_SESSION['USERNAME']) == FALSE) {
 	
 	while($row = mysql_fetch_assoc($result)) {
 		if($validcat == $row['id']) {
@@ -74,7 +103,7 @@ else {
 			echo "<a href='viewcat.php?id=" . $row['id'] . "'>" . $row['cat'] . "</a><br />";
 		}
 	}
-}
+}*/
 
 require("footer.php")
 ?>
