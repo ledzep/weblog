@@ -4,6 +4,22 @@
 require("config.php");
 $conn = mysql_connect($dbhost, $dbuser, $dbpassword);
 mysql_select_db($dbdatabase, $conn);
+
+if (isset($_GET['id']) == TRUE) {
+	if (is_numeric($_GET['id']) == FALSE) {
+		$error = 1;
+	}
+	
+	if (isset($error)) {
+		header("Location: " . $config_basedir);
+	}
+	else  {
+		$validentry = $_GET['id'];
+	}
+}
+else {
+	$validentry = 0;
+}
 ?>
 
 
@@ -65,7 +81,7 @@ function initMap() {
 		 }
 	 });
 	 <?
-	 $geosql = "SELECT * FROM visitor_map;";
+	 $geosql = "SELECT * FROM visitor_map WHERE blog_id = " $validentry;
 	 $georesult = mysql_query($geosql);
 
 	 while($georow = mysql_fetch_array($georesult)) {
