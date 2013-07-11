@@ -88,7 +88,6 @@ if($numrows_comm) {
 ?>
 </script>
 </head>
-<body onload="initMap()" style="margin:0px; border:0px; padding:0px;">
 <div id="map"></div>
 </html>
   
