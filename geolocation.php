@@ -4,33 +4,11 @@
 require("config.php");
 $conn = mysql_connect($dbhost, $dbuser, $dbpassword);
 mysql_select_db($dbdatabase, $conn);
-
-if (isset($_GET['id']) == TRUE) {
-	if (is_numeric($_GET['id']) == FALSE) {
-		$error = 1;
-	}
-	
-	if (isset($error)) {
-		header("Location: " . $config_basedir);
-	}
-	else  {
-		$validentry = $_GET['id'];
-	}
-}
-else {
-	$validentry = 0;
-}
 ?>
-
 
 <html>
  <head>
  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
- <title>Google Map API V3 with markers</title>
- <style type="text/css">
- body { font: normal 10pt Helvetica, Arial; }
- #map { width: 350px; height: 300px; border: 0px; padding: 0px; }
- </style>
  <script src="http://maps.google.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script>
  <script type="text/javascript">
  //Sample code written by August Li
@@ -97,9 +75,20 @@ function initMap() {
 	 map.fitBounds(bounds);
 
 }
- </script>
- </head>
- <body onload="initMap()" style="margin:0px; border:0px; padding:0px;">
- <div id="map"></div>
- </html>
+<?php
+$commsql = "SELECT * FROM comments WHERE blog_id = " . $validentry . "
+			ORDER BY dateposted DESC;";
+$commresult = mysql_query($commsql);
+$numrows_comm = mysql_num_rows($commresult);
+if($numrows_comm) {
+	?>
+    google.maps.event.addDomListener(window, 'load', initMap);
+    <?php
+}
+?>
+</script>
+</head>
+<body onload="initMap()" style="margin:0px; border:0px; padding:0px;">
+<div id="map"></div>
+</html>
   
